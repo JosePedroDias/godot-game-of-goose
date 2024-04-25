@@ -15,6 +15,7 @@ script = ExtResource("1_6qy2j")
 
 [node name="die" type="MeshInstance3D" parent="."]
 transform = Transform3D(0.25, 0, 0, 0, 0.25, 0, 0, 0, 0.25, 0.209041, 0.252966, 1.71272)
+rotation_edit_mode = 1
 mesh = ExtResource("1_o5irr")
 
 [node name="piece" type="MeshInstance3D" parent="."]
@@ -50,4 +51,5 @@ pixel_size = 0.004
 shaded = true
 texture = ExtResource("4_xp1ri")
 
-[node name="CellPositions" parent="." instance=ExtResource("5_xryfj")]
+[node name="CellPositions" parent="." node_paths=PackedStringArray("die") instance=ExtResource("5_xryfj")]
+die = NodePath("../die")
