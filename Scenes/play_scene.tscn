@@ -19,6 +19,7 @@ mesh = ExtResource("1_o5irr")
 
 [node name="piece" type="MeshInstance3D" parent="."]
 transform = Transform3D(0.5, 0, 0, 0, 0.5, 0, 0, 0, 0.5, -2.74016, 0, 4.71748)
+visible = false
 material_override = SubResource("StandardMaterial3D_2ndrn")
 mesh = ExtResource("2_oo6gi")
 
@@ -40,6 +41,7 @@ sky_mode = 1
 transform = Transform3D(-4.37114e-08, 1, 4.37114e-08, -1.5246e-23, -4.37114e-08, 1, 1, 4.37114e-08, 1.91069e-15, 0, 0, 0)
 pixel_size = 0.005
 shaded = true
+double_sided = false
 texture = ExtResource("3_jlis3")
 
 [node name="plane" type="Sprite3D" parent="."]
