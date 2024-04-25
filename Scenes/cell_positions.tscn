@@ -1,0 +1,43 @@
+[gd_scene load_steps=3 format=3 uid="uid://ddh5sliebtvrw"]
+
+[ext_resource type="Script" path="res://Scripts/cell_positions.gd" id="1_aji7e"]
+[ext_resource type="Texture2D" uid="uid://va1skju5s825" path="res://Assets/Textures/game_of_goose_hd.png" id="1_ncil4"]
+
+[node name="CellPositions" type="Node"]
+script = ExtResource("1_aji7e")
+
+[node name="p00" type="Marker3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.27531, 0, 3.55069)
+
+[node name="p01" type="Marker3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.614588, 0, 3.56803)
+
+[node name="p02" type="Marker3D" parent="."]
+transform = Transform3D(0.999997, 0.00110992, -0.0022266, -0.00110948, 0.999999, 0.000199854, 0.00222682, -0.000197395, 0.999997, 0.0512162, 0, 3.56803)
+
+[node name="p03" type="Marker3D" parent="."]
+transform = Transform3D(0.999998, 0.000818, -0.0016617, -0.000816799, 0.999999, 0.000727619, 0.00166229, -0.000726269, 0.999998, 0.725556, 0, 3.56803)
+
+[node name="p04" type="Marker3D" parent="."]
+transform = Transform3D(0.990125, 0.00070672, 0.140189, -0.000816799, 0.999999, 0.000727619, -0.140189, -0.000834947, 0.990124, 1.51086, 0, 3.56803)
+
+[node name="p05" type="Marker3D" parent="."]
+transform = Transform3D(0.921343, 0.00046968, 0.388751, -0.000816799, 0.999999, 0.000727619, -0.38875, -0.000987922, 0.921343, 2.43348, 0, 3.30854)
+
+[node name="p06" type="Marker3D" parent="."]
+transform = Transform3D(0.843768, 0.00029866, 0.536707, -0.000816799, 0.999999, 0.000727618, -0.536707, -0.00105233, 0.843768, 3.27536, 0, 2.853)
+
+[node name="p07" type="Marker3D" parent="."]
+transform = Transform3D(0.639147, -3.75575e-05, 0.769085, -0.000816799, 0.999999, 0.000727618, -0.769084, -0.00109324, 0.639147, 3.94426, 0, 2.20141)
+
+[node name="p08" type="Marker3D" parent="."]
+transform = Transform3D(0.432766, -0.000302481, 0.901506, -0.000816799, 0.999999, 0.000727618, -0.901506, -0.00105124, 0.432766, 4.44593, 0, 1.39988)
+
+[node name="p09" type="Marker3D" parent="."]
+transform = Transform3D(0.158266, -0.000589187, 0.987397, -0.000816799, 0.999999, 0.000727618, -0.987396, -0.000921655, 0.158265, 4.73424, 0, 0.459972)
+
+[node name="board" type="Sprite3D" parent="."]
+transform = Transform3D(-4.37114e-08, 1, 4.37114e-08, -1.5246e-23, -4.37114e-08, 1, 1, 4.37114e-08, 1.91069e-15, 0, 0, 0)
+pixel_size = 0.005
+shaded = true
+texture = ExtResource("1_ncil4")

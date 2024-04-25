@@ -1,0 +1,51 @@
+[gd_scene load_steps=8 format=3 uid="uid://bdlmoamg5tnl0"]
+
+[ext_resource type="Script" path="res://Scripts/play_scene.gd" id="1_6qy2j"]
+[ext_resource type="ArrayMesh" uid="uid://cqia1sjum30td" path="res://Assets/Meshes/render_die.res" id="1_o5irr"]
+[ext_resource type="ArrayMesh" uid="uid://c8cipbola6s1r" path="res://Assets/Meshes/piece.res" id="2_oo6gi"]
+[ext_resource type="Texture2D" uid="uid://va1skju5s825" path="res://Assets/Textures/game_of_goose_hd.png" id="3_jlis3"]
+[ext_resource type="Texture2D" uid="uid://b66357whr25l4" path="res://Assets/Textures/wood_top_hd.jpg" id="4_xp1ri"]
+[ext_resource type="PackedScene" uid="uid://ddh5sliebtvrw" path="res://Scenes/cell_positions.tscn" id="5_xryfj"]
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_2ndrn"]
+albedo_color = Color(0.690196, 0.619608, 0.0901961, 1)
+
+[node name="PlayScene" type="Node3D"]
+script = ExtResource("1_6qy2j")
+
+[node name="die" type="MeshInstance3D" parent="."]
+transform = Transform3D(0.25, 0, 0, 0, 0.25, 0, 0, 0, 0.25, 0.209041, 0.252966, 1.71272)
+mesh = ExtResource("1_o5irr")
+
+[node name="piece" type="MeshInstance3D" parent="."]
+transform = Transform3D(0.5, 0, 0, 0, 0.5, 0, 0, 0, 0.5, -2.74016, 0, 4.71748)
+material_override = SubResource("StandardMaterial3D_2ndrn")
+mesh = ExtResource("2_oo6gi")
+
+[node name="Camera3D" type="Camera3D" parent="."]
+transform = Transform3D(1, -5.95416e-16, 2.4663e-16, 4.28465e-17, 0.443259, 0.896394, -6.43048e-16, -0.896394, 0.443259, 0.301948, 6.96687, 4.41801)
+fov = 60.0
+
+[node name="DirectionalLight3D" type="DirectionalLight3D" parent="."]
+transform = Transform3D(-0.626753, 0.565795, 0.535776, 0.124649, -0.605928, 0.785693, 0.769183, 0.55922, 0.309241, 1.44411, 3.19473, 0)
+light_energy = 1.081
+light_indirect_energy = 1.889
+shadow_enabled = true
+directional_shadow_split_1 = 0.095
+directional_shadow_split_2 = 0.0
+directional_shadow_max_distance = 29.3
+sky_mode = 1
+
+[node name="board" type="Sprite3D" parent="."]
+transform = Transform3D(-4.37114e-08, 1, 4.37114e-08, -1.5246e-23, -4.37114e-08, 1, 1, 4.37114e-08, 1.91069e-15, 0, 0, 0)
+pixel_size = 0.005
+shaded = true
+texture = ExtResource("3_jlis3")
+
+[node name="plane" type="Sprite3D" parent="."]
+transform = Transform3D(2, -1.39515e-15, -3.04919e-23, -3.04919e-23, -8.74228e-08, 2, -1.39515e-15, -2, -8.74228e-08, 0, -0.0358238, 0)
+pixel_size = 0.004
+shaded = true
+texture = ExtResource("4_xp1ri")
+
+[node name="CellPositions" parent="." instance=ExtResource("5_xryfj")]
