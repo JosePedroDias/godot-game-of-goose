@@ -6,7 +6,7 @@ var children_positions: Array[Node3D] = []
 
 signal animation_finished
 
-var anim_duration = 0.7
+var anim_duration = 0.4 #0.7
 
 func _ready():
 	var children = get_children()

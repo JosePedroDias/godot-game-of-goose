@@ -1,7 +1,7 @@
 extends Node3D
 
 @onready var cp: CellPositions = $CellPositions #get_node("CellPositions")
-@onready var piece: MeshInstance3D = $die# $piece
+@onready var piece: MeshInstance3D = $piece # $die
 
 var current_cell_no: int = -1
 const last_cell_no: int = 63
