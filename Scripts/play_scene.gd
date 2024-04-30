@@ -4,6 +4,8 @@ extends Node3D
 @onready var reference_piece: MeshInstance3D = $piece # $die
 
 var pieces: Array[MeshInstance3D] = []
+var next_to_play: Array[int] = []
+var player_cell_index: Array[int] = []
 
 var current_cell_no: int = -1
 const last_cell_no: int = 63
@@ -23,6 +25,14 @@ func _input(event):
 			elif event.keycode == KEY_4: cp.roll_die(4)
 			elif event.keycode == KEY_5: cp.roll_die(5)
 			elif event.keycode == KEY_6: cp.roll_die(6)
+			elif event.keycode == KEY_7:
+				var player_index = _next_player()
+				var die_value = randi_range(1, 6)
+				cp.roll_die(die_value)
+				var current_cell_no = player_cell_index[player_index]
+				current_cell_no += die_value
+				cp.animate_to_position(pieces[player_index], current_cell_no)
+				player_cell_index[player_index] = current_cell_no
 			elif event.keycode == KEY_9: traverse_the_board()
 
 func _piece_movement_done() -> void:
@@ -54,3 +64,10 @@ func _create_piece() -> void:
 	cp.animate_to_position(piece, 0)#pieces.size())
 	
 	pieces.push_back(piece)
+	next_to_play.push_back(next_to_play.size())
+	player_cell_index.push_back(0)
+
+func _next_player() -> int:
+	var result = next_to_play.pop_front()
+	next_to_play.push_back(result)
+	return result
