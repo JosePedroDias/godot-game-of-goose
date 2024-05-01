@@ -13,11 +13,16 @@ var cell_occupants: Array[Array] = []
 signal position_animation_finished
 signal rolling_animation_finished
 
-var move_piece_duration = 0.4 #0.7
+var move_piece_duration = 0.3 #0.7
 var roll_die_step_duration = 0.5
 
 const RAD_90 = 0.5 * PI
 const RAD_180 = PI
+const RAD_360 = 2.0 * PI
+
+const RAD_TO_DEG = 180.0 / PI
+
+const PIECE_RADIUS = 0.2
 
 func _ready():
 	# populates children_positions
@@ -53,15 +58,31 @@ func animate_to_position(piece: Node3D, cell_nr: int) -> void:
 		if found_idx != -1: items.remove_at(found_idx)
 	var items = cell_occupants[cell_nr]
 	items.push_back(piece)
-	#print(cell_occupants)
 	
 	# get reference position and orientation from makers stored in children_positions
 	var node = get_nth_marker(cell_nr)
 	var pos = node.position
 	var q = node.quaternion
 	
+	var multiple_occupants = items.size() > 1
+	if multiple_occupants:
+		var i = 0
+		var d_angle = RAD_360 / items.size()
+		for item in items:
+			var angle = i * d_angle
+			var pos2 = Vector3(pos)
+			pos2 += Vector3(
+				PIECE_RADIUS * cos(angle),
+				0,
+				PIECE_RADIUS * sin(angle)
+			)
+			var tween0 = get_tree().create_tween().set_trans(Tween.TRANS_CUBIC)
+			tween0.tween_property(item, "position", pos2, move_piece_duration)
+			i += 1
+	
 	var tween = get_tree().create_tween().set_trans(Tween.TRANS_CUBIC).set_parallel(true)
-	tween.tween_property(piece, "position", pos, move_piece_duration)
+	if !multiple_occupants:
+		tween.tween_property(piece, "position", pos, move_piece_duration)
 	tween.tween_property(piece, "quaternion", q, move_piece_duration)
 	tween.chain().tween_callback(func(): position_animation_finished.emit())
 
@@ -83,7 +104,6 @@ func set_die_face(face_no: int) -> void:
 
 func roll_die(face_no: int) -> void:
 	var tween = get_tree().create_tween().set_trans(Tween.TRANS_SINE)
-	tween.tween_property(die, "quaternion", _random_quaternion(),          roll_die_step_duration)
 	tween.tween_property(die, "quaternion", _random_quaternion(),          roll_die_step_duration)
 	tween.tween_property(die, "quaternion", _get_face_quaternion(face_no), roll_die_step_duration)
 	tween.tween_callback(func(): rolling_animation_finished.emit(face_no))
