@@ -72,8 +72,11 @@ func _create_piece() -> void:
 	
 	cp.animate_to_position(piece, 0)#pieces.size())
 	
+	var player_idx = next_to_play.size()
+	piece.name = 'piece_%s' % player_idx
+	
 	pieces.push_back(piece)
-	next_to_play.push_back(next_to_play.size())
+	next_to_play.push_back(player_idx)
 	player_cell_index.push_back(0)
 	player_cell_destination_index.push_back(0)
 

@@ -2,10 +2,13 @@ extends Node
 
 class_name CellPositions
 
+@onready var play_scene = $".."
+
 @export var die: MeshInstance3D
 var children_positions: Array[Node3D] = []
 
 var die_quats: Array[Quaternion] = []
+var cell_occupants: Array[Array] = []
 
 signal position_animation_finished
 signal rolling_animation_finished
@@ -17,17 +20,23 @@ const RAD_90 = 0.5 * PI
 const RAD_180 = PI
 
 func _ready():
+	# populates children_positions
 	var children = get_children()
 	for n:Node in children:
 		if n.name != 'board':
 			children_positions.push_back(n)
 	
+	# populates die_quats
 	die_quats.push_back( Quaternion(Vector3(0.0, 0.0, 1.0), RAD_90).normalized() ) #0 (1) OK
 	die_quats.push_back( Quaternion(Vector3(1.0, 0.0, 0.0), -RAD_90).normalized() ) #1 (2) OK
 	die_quats.push_back( Quaternion().normalized() ) #2 (3) OK
 	die_quats.push_back( Quaternion(Vector3(1.0, 0.0, 0.0), RAD_180).normalized() ) #3 (4) OK
 	die_quats.push_back( Quaternion(Vector3(1.0, 0.0, 0.0), RAD_90).normalized() ) #4 (5) OK
 	die_quats.push_back( Quaternion(Vector3(0.0, 0.0, 1.0), -RAD_90).normalized() ) #5 (6) OK
+	
+	# populate cell_occupants
+	for i in range(play_scene.LAST_CELL_NO + 1):
+		cell_occupants.push_back([])
 
 func get_nth_marker(cell_nr: int) -> Node3D:
 	var is_valid = cell_nr >= 0 && cell_nr < children_positions.size()
@@ -37,8 +46,17 @@ func get_nth_marker(cell_nr: int) -> Node3D:
 	return children_positions[cell_nr]
 	
 func animate_to_position(piece: Node3D, cell_nr: int) -> void:
-	var node = get_nth_marker(cell_nr)
+	# update cell occupants
+	for i in range(play_scene.LAST_CELL_NO + 1):
+		var items = cell_occupants[i]
+		var found_idx = items.find(piece)
+		if found_idx != -1: items.remove_at(found_idx)
+	var items = cell_occupants[cell_nr]
+	items.push_back(piece)
+	#print(cell_occupants)
 	
+	# get reference position and orientation from makers stored in children_positions
+	var node = get_nth_marker(cell_nr)
 	var pos = node.position
 	var q = node.quaternion
 	
