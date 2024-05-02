@@ -3,6 +3,7 @@ extends GenericNakamaClient
 class_name GooseNakamaClient
 
 @export var label: Label
+
 var play_scene: PlayScene
 
 const OPCODE = {
@@ -36,16 +37,16 @@ func on_receive(op: int, data) -> void:
 	
 	match op:
 		OPCODE.NEXT_TO_PLAY:
-			print("NEXT_TO_PLAY: ", data[0])
-			play_scene.next_to_play__(data[0])
+			print("NEXT_TO_PLAY: ", data)
+			play_scene.next_to_play(data)
 		OPCODE.USERS_CHANGED:
 			print("USERS_CHANGED: ", data)
 			play_scene.users_changed(data)
 		OPCODE.PIECE_MOVED:
-			print("PIECE_MOVED: ", data.user_id, data.cell_no)
+			print("PIECE_MOVED: ", data.user_id, ' , ', data.cell_no)
 			play_scene.piece_moved(data.user_id, data.cell_no)
 		OPCODE.DICE_ROLL:
-			print("DICE_ROLL", data)
+			print("DICE_ROLL: ", data)
 			play_scene.apply_dice_roll(data)
 
 func play():
