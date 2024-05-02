@@ -1,7 +1,10 @@
 extends Node3D
 
+class_name PlayScene
+
 @onready var cp: CellPositions = $CellPositions #get_node("CellPositions")
 @onready var reference_piece: MeshInstance3D = $piece # $die
+@onready var nc: GooseNakamaClient = $Ui.nc
 
 var pieces: Array[MeshInstance3D] = []
 var next_to_play: Array[int] = []
@@ -12,21 +15,17 @@ const LAST_CELL_NO: int = 63
 
 func _ready():
 	cp.set_die_face(randi_range(1, 6))
-	_create_piece()
-	_create_piece()
-	_create_piece()
+	nc.play_scene = self
+	#_create_piece()
+	#_create_piece()
+	#_create_piece()
 
 func _input(event) -> void:
 	if event is InputEventKey:
 		if event.pressed:
 			if event.keycode == KEY_ESCAPE: get_tree().quit()
-			elif event.keycode == KEY_1: cp.roll_die(1)
-			elif event.keycode == KEY_2: cp.roll_die(2)
-			elif event.keycode == KEY_3: cp.roll_die(3)
-			elif event.keycode == KEY_4: cp.roll_die(4)
-			elif event.keycode == KEY_5: cp.roll_die(5)
-			elif event.keycode == KEY_6: cp.roll_die(6)
-			elif event.keycode == KEY_7: start_next_player_round()
+			#elif event.keycode == KEY_SPACE: start_next_player_round()
+			elif event.keycode == KEY_SPACE: nc.play()
 
 func start_next_player_round() -> void:
 	var player_index = _next_player()
@@ -87,3 +86,16 @@ func _next_player() -> int:
 
 func _current_player() -> int:
 	return next_to_play[-1]
+
+func next_to_play__(user_id: String) -> void:
+	print(user_id)
+
+func users_changed(user_ids):
+#func users_changed(user_ids: Array[String]) -> void:
+	print(user_ids)
+
+func piece_moved(user_id: String, piece_no: int) -> void:
+	print(user_id, ',', piece_no)
+	
+func apply_dice_roll(value: int) -> void:
+	print(value)
