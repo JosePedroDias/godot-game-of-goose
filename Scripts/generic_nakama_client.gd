@@ -34,7 +34,6 @@ func go():
 		NakamaLogger.LOG_LEVEL.DEBUG if debug else NakamaLogger.LOG_LEVEL.NONE
 	)
 	
-	
 	#if !debug:
 	#	Nakama.logger._level = NakamaLogger.LOG_LEVEL.NONE
 	#_client.timeout = timeout
@@ -45,6 +44,8 @@ func go():
 		print('auth failed!!', _session)
 		return
 	#print('session: ', _session)
+	
+	get_window().title = 'game of goose %s' % _session.user_id
 	
 	_socket = Nakama.create_socket_from(_client)
 	

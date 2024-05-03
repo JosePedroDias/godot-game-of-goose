@@ -6,68 +6,43 @@ class_name PlayScene
 @onready var reference_piece: MeshInstance3D = $piece # $die
 @onready var nc: GooseNakamaClient = $Ui.nc
 
-
+var players: Dictionary = {}
 # piece (MeshInstance3D)
 # cell_no (int)
 # cell_destination_no (int)
 # color (Color)
 
-var players: Dictionary = {}
+var current_player_user_id: String = ""
 
-#var pieces: Array[MeshInstance3D] = []
-#var next_to_play: Array[int] = []
-#var player_cell_index: Array[int] = []
-#var player_cell_destination_index: Array[int] = []
+var _queued_piece_move: Array = []
 
 const LAST_CELL_NO: int = 63
 
 func _ready():
 	cp.set_die_face(randi_range(1, 6))
 	nc.play_scene = self
-	#_create_piece()
-	#_create_piece()
-	#_create_piece()
 
 func _input(event) -> void:
 	if event is InputEventKey:
 		if event.pressed:
 			if event.keycode == KEY_ESCAPE: get_tree().quit()
 			elif event.keycode == KEY_SPACE: nc.play()
-
-func start_next_player_round() -> void:
-	#var player_index = _next_player()
-	#var current_cell_no = player_cell_index[player_index]
-	#
-	#if current_cell_no == LAST_CELL_NO:
-		#print('nowhere to move to. skip')
-		#return
-	#
-	#var die_value = randi_range(1, 6)
-	#cp.rolling_animation_finished.connect(_resume_player_round_after_rolling_die)
-	#cp.roll_die(die_value)
-	pass
 	
-func _resume_player_round_after_rolling_die(die_value) -> void:
-	#var player_index = _current_player()
-	#cp.rolling_animation_finished.disconnect(_resume_player_round_after_rolling_die)
-	#var current_cell_no = player_cell_index[player_index]
-	#player_cell_index[player_index] = clamp(current_cell_no + 1, 0, LAST_CELL_NO)
-	#player_cell_destination_index[player_index] = clamp(current_cell_no + die_value, 0, LAST_CELL_NO)
-	#cp.animate_to_position(pieces[player_index], current_cell_no + 1)
-	#cp.position_animation_finished.connect(_resume_player_round_after_moving_a_cell)
-	pass
+func _start_moving_piece(destination_cell_no: int) -> void:
+	var p = players[current_player_user_id]
+	p.cell_destination_no = destination_cell_no
+	p.cell_no += 1
+	cp.position_animation_finished.connect(_resume_moving_piece)
+	cp.animate_to_position(p.piece, p.cell_no)
 
-func _resume_player_round_after_moving_a_cell() -> void:
-	#var player_index = _current_player()
-	#var current_cell_no = player_cell_index[player_index]
-	#var destination_cell_no = player_cell_destination_index[player_index]
-	#
-	#if destination_cell_no == current_cell_no:
-		#cp.rolling_animation_finished.disconnect(_resume_player_round_after_moving_a_cell)
-	#else:
-		#player_cell_index[player_index] = current_cell_no + 1
-		#cp.animate_to_position(pieces[player_index], current_cell_no + 1)
-	pass
+func _resume_moving_piece() -> void:
+	var p = players[current_player_user_id]
+	if p.cell_no == p.cell_destination_no:
+		cp.position_animation_finished.disconnect(_resume_moving_piece)
+		return _piece_moved(0)
+	p.cell_no += 1
+	cp.animate_to_position(p.piece, p.cell_no)
+
 
 func _create_piece(user_id: String) -> MeshInstance3D:
 	var piece: MeshInstance3D = reference_piece.duplicate()
@@ -86,29 +61,31 @@ func next_to_play(user_ids):
 	for user_id in user_ids:
 		if !players.has(user_id):
 			_add_player(user_id)
+	current_player_user_id = user_ids[0]
 	
 func _add_player(user_id):
-	var d = {
+	players[user_id] = {
 		'piece': _create_piece(user_id),
 		'cell_no': 0,
 		'cell_destination_no': 0,
 	}
-	players[user_id] = d
-	#print(players)
 
 func users_changed(user_ids):
-#func users_changed(user_ids: Array[String]) -> void:
-	print(user_ids)
-	#for user_id in user_ids:
-	#	if !players.has(user_id):
-	#		_add_player(user_id)
-	#print(players)
+	pass # TODO is this needed?
+	#print(user_ids)
+
+func apply_dice_roll(value: int) -> void:
+	cp.rolling_animation_finished.connect(_piece_moved, CONNECT_ONE_SHOT)
+	cp.roll_die(value)
 
 func piece_moved(user_id: String, piece_no: int) -> void:
-	print(user_id, ',', piece_no)
-	var piece = players[user_id].piece # TODO
-	cp.animate_to_position(piece, piece_no)
+	_queued_piece_move.push_back([user_id, piece_no])
 	
-func apply_dice_roll(value: int) -> void:
-	cp.roll_die(value)
-	#print(value)
+func _piece_moved(face_no):
+	print('_piece_moved (%d moves to address)' % _queued_piece_move.size())
+	if _queued_piece_move.size() > 0:
+		var piece_move = _queued_piece_move.pop_front()
+		var user_id = piece_move[0]
+		var piece_no = piece_move[1]
+		var piece = players[user_id].piece # TODO
+		_start_moving_piece(piece_no)

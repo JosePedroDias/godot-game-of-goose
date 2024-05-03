@@ -7,9 +7,10 @@
 
 ## TODO
 
-- make special cells do special things
-- prevent roll action from starting on an ongoing move
-- adapt nakama code from tic-tac-toe (library + login form)
-- connect godot client with the server game
-- create UI overlay with roll button and a label to provide feedback to the player
+- fix GO cell bug?
+- make server decide and notify players on their piece colors
+- create UI overlay:
+	- roll die button
+	- label to provide feedback to the players
+	- overlay with colored pieces and player names
 - add sound effects?
