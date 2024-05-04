@@ -46,7 +46,7 @@ func _resume_moving_piece():
 	var p = players[current_player_user_id]
 	if p.cell_no == p.cell_destination_no:
 		cp.position_animation_finished.disconnect(_resume_moving_piece)
-		return _piece_moved(0)
+		return _piece_moved()
 	p.cell_no += 1
 	cp.animate_to_position(p.piece, p.cell_no)
 
@@ -94,9 +94,8 @@ func piece_moved(user_id: String, piece_no: int) -> void:
 	out._print("piece_moved('%s', %d)" % [user_id, piece_no])
 	_queued_piece_move.push_back([user_id, piece_no])
 	
-func _piece_moved(face_no):
-	out._print('_piece_moved(%d)' % face_no)
-	#out.log('_piece_moved (%d moves to address)' % _queued_piece_move.size())
+func _piece_moved():
+	out._print('_piece_moved() (commands left to address: %d)' % _queued_piece_move.size())
 	if _queued_piece_move.size() > 0:
 		var piece_move = _queued_piece_move.pop_front()
 		var piece_no = piece_move[1]

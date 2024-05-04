@@ -21,6 +21,7 @@ var _match: NakamaRTAPI.Match
 var email: String
 var password: String
 var username: String
+var reconnect_retries_left = 10
 
 func go():
 	#print('email:%s, password:%s, username:%s' % [email, password, username])
@@ -79,6 +80,21 @@ func _on_socket_connected():
 
 func _on_socket_closed():
 	print("Socket closed.")
+	
+	# TODO: confirm this logic is sound
+	
+	if reconnect_retries_left == 0:
+		#DisplayServer.dialog_show('title', 'desc')
+		print('too many retries. leaving.')
+		get_tree().quit()
+	
+	reconnect_retries_left -= 1
+	
+	print('sleeping for 500 ms...')
+	await get_tree().create_timer(.5).timeout
+	
+	print("Resuming socket...")
+	await _socket.connect_async(_session)
 
 func _on_socket_error(err):
 	printerr("Socket error %s" % err)

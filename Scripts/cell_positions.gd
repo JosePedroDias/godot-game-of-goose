@@ -106,4 +106,4 @@ func roll_die(face_no: int) -> void:
 	var tween = get_tree().create_tween().set_trans(Tween.TRANS_SINE)
 	tween.tween_property(die, "quaternion", _random_quaternion(),          roll_die_step_duration)
 	tween.tween_property(die, "quaternion", _get_face_quaternion(face_no), roll_die_step_duration)
-	tween.tween_callback(func(): rolling_animation_finished.emit(face_no))
+	tween.tween_callback(func(): rolling_animation_finished.emit())
