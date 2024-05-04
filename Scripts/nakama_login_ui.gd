@@ -11,8 +11,24 @@ class_name NakamaLoginUi
 
 const SAVE_DATA_PATH = "user://savegame.save"
 
+const DEVELOPMENT_MODE = true
+
 func _ready():
-	var o = _load_data()
+	var o: Dictionary = {}
+	
+	await Incremental.timer.timeout
+	
+	if DEVELOPMENT_MODE:
+		o = {
+			email = "email%d@email.com" % Incremental.nth,
+			password = "password",
+			username = "user%d" % Incremental.nth,
+		}
+	else:
+		o = _load_data()
+		
+	print(o)
+		
 	if o != null:
 		if o.has('email'):    email_le.text    = o['email']
 		if o.has('password'): password_le.text = o['password']
@@ -25,9 +41,12 @@ func _save_data():
 		password = password_le.text,
 		username = username_le.text,
 	}
-	var save_game = FileAccess.open(SAVE_DATA_PATH, FileAccess.WRITE)
-	if save_game == null: return
-	save_game.store_line(JSON.stringify(o))
+	
+	if !DEVELOPMENT_MODE:
+		var save_game = FileAccess.open(SAVE_DATA_PATH, FileAccess.WRITE)
+		if save_game == null: return
+		save_game.store_line(JSON.stringify(o))
+	
 	return o
 	
 func _load_data():
@@ -40,8 +59,6 @@ func _load_data():
 func _on_log_in_pressed():
 	var o = _save_data()
 	visible = false
-	
-	print('clicked')
 	
 	nc.email = o.email
 	nc.password = o.password
