@@ -2,8 +2,6 @@ extends GenericNakamaClient
 
 class_name GooseNakamaClient
 
-@export var label: Label
-
 var play_scene: PlayScene
 
 var out: OverlayOutput
@@ -32,27 +30,29 @@ func go():
 
 func get_user_id() -> String:
 	return _session.user_id
-	
+
 func on_receive(op: int, data) -> void:
-	out.log(str(op) + ' | ' + str(data))
+	out._print('%d | %s' % [op, data])
 	
 	if !play_scene:
 		print('no play scene!')
 		return
 	
 	match op:
+		OPCODE.FEEDBACK:
+			out.log(data)
 		OPCODE.NEXT_TO_PLAY:
-			out.log("NEXT_TO_PLAY: %s" % JSON.stringify(data))
+			#out.log("NEXT_TO_PLAY: %s" % JSON.stringify(data))
 			play_scene.next_to_play(data)
-		OPCODE.USERS_CHANGED:
-			out.log("USERS_CHANGED: %s" + JSON.stringify(data))
-			play_scene.users_changed(data)
+		#OPCODE.USERS_CHANGED:
+		#	out.log("USERS_CHANGED: %s" + JSON.stringify(data))
+		#	play_scene.users_changed(data)
 		OPCODE.PIECE_MOVED:
-			out.log("PIECE_MOVED: %s, %d" % [data.user_id,data.cell_no])
+			#out.log("PIECE_MOVED: %s, %d" % [data.user_id,data.cell_no])
 			play_scene.piece_moved(data.user_id, data.cell_no)
 		OPCODE.DICE_ROLL:
-			out.log("DICE_ROLL: %d" % data)
+			#out.log("DICE_ROLL: %d" % data)
 			play_scene.apply_dice_roll(data)
 
-func play():
+func roll_dice():
 	await _send(OPCODE.ROLL_DICE, {})

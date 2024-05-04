@@ -9,6 +9,7 @@
 
 - fix GO cell bug?
 - make server decide and notify players on their piece colors
+- resume nakama client after disconnect
 - create UI overlay:
 	- roll die button
 	- label to provide feedback to the players

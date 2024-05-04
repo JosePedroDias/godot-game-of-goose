@@ -5,12 +5,14 @@ class_name PlayScene
 @onready var cp: CellPositions = $CellPositions #get_node("CellPositions")
 @onready var reference_piece: MeshInstance3D = $piece # $die
 @onready var nc: GooseNakamaClient = $Ui.nc
+@onready var out: OverlayOutput = %out
 
 var players: Dictionary = {}
 # piece (MeshInstance3D)
 # cell_no (int)
 # cell_destination_no (int)
 # color (Color)
+# name (String)
 
 var current_player_user_id: String = ""
 
@@ -23,22 +25,15 @@ func _ready():
 	nc.play_scene = self
 	
 	await Incremental.timer.timeout
-	var rand = RandomNumberGenerator.new()
-
-	var vp = DisplayServer.screen_get_size()
-	
-	get_window().size = Vector2(0.40*vp.x, 0.40*vp.y)
-	
-	if Incremental.nth == 0:
-		get_window().position = Vector2(0.05*vp.x, 0.30*vp.y)
-	else:
-		get_window().position = Vector2(0.55*vp.x, 0.30*vp.y)
+	_place_window()
 
 func _input(event) -> void:
 	if event is InputEventKey:
 		if event.pressed:
 			if event.keycode == KEY_ESCAPE: get_tree().quit()
-			elif event.keycode == KEY_SPACE: nc.play()
+			elif event.keycode == KEY_BACKSLASH: out.toggle_visibility()
+			elif event.keycode == KEY_SPACE: nc.roll_dice()
+			elif event.keycode == KEY_D: breakpoint
 	
 func _start_moving_piece(destination_cell_no: int) -> void:
 	var p = players[current_player_user_id]
@@ -47,7 +42,7 @@ func _start_moving_piece(destination_cell_no: int) -> void:
 	cp.position_animation_finished.connect(_resume_moving_piece)
 	cp.animate_to_position(p.piece, p.cell_no)
 
-func _resume_moving_piece() -> void:
+func _resume_moving_piece():
 	var p = players[current_player_user_id]
 	if p.cell_no == p.cell_destination_no:
 		cp.position_animation_finished.disconnect(_resume_moving_piece)
@@ -56,7 +51,7 @@ func _resume_moving_piece() -> void:
 	cp.animate_to_position(p.piece, p.cell_no)
 
 
-func _create_piece(user_id: String) -> MeshInstance3D:
+func _create_piece(_user_id: String) -> MeshInstance3D:
 	var piece: MeshInstance3D = reference_piece.duplicate()
 	add_child(piece)
 	piece.visible = true
@@ -74,6 +69,10 @@ func next_to_play(user_ids):
 		if !players.has(user_id):
 			_add_player(user_id)
 	current_player_user_id = user_ids[0]
+	if current_player_user_id == nc.get_user_id():
+		out.log("our time to play")
+	else:
+		out.log("it's %s time to play" % current_player_user_id)
 	
 func _add_player(user_id):
 	players[user_id] = {
@@ -82,22 +81,31 @@ func _add_player(user_id):
 		'cell_destination_no': 0,
 	}
 
-func users_changed(user_ids):
-	pass # TODO is this needed?
-	#print(user_ids)
+#func users_changed(user_ids):
+#	pass # TODO is this needed?
+#	#print(user_ids)
 
 func apply_dice_roll(value: int) -> void:
+	out.log('the die landed on %d' % value)
 	cp.rolling_animation_finished.connect(_piece_moved, CONNECT_ONE_SHOT)
 	cp.roll_die(value)
 
 func piece_moved(user_id: String, piece_no: int) -> void:
+	out._print("piece_moved('%s', %d)" % [user_id, piece_no])
 	_queued_piece_move.push_back([user_id, piece_no])
 	
 func _piece_moved(face_no):
-	%out.log('_piece_moved (%d moves to address)' % _queued_piece_move.size())
+	out._print('_piece_moved(%d)' % face_no)
+	#out.log('_piece_moved (%d moves to address)' % _queued_piece_move.size())
 	if _queued_piece_move.size() > 0:
 		var piece_move = _queued_piece_move.pop_front()
-		var user_id = piece_move[0]
 		var piece_no = piece_move[1]
-		var piece = players[user_id].piece # TODO
 		_start_moving_piece(piece_no)
+
+func _place_window():
+	var vp = DisplayServer.screen_get_size()
+	get_window().size = Vector2(0.40*vp.x, 0.40*vp.y)
+	if Incremental.nth == 0:
+		get_window().position = Vector2(0.05*vp.x, 0.30*vp.y)
+	else:
+		get_window().position = Vector2(0.55*vp.x, 0.30*vp.y)

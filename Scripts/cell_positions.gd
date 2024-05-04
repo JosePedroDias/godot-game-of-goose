@@ -53,9 +53,9 @@ func get_nth_marker(cell_nr: int) -> Node3D:
 func animate_to_position(piece: Node3D, cell_nr: int) -> void:
 	# update cell occupants
 	for i in range(play_scene.LAST_CELL_NO + 1):
-		var items = cell_occupants[i]
-		var found_idx = items.find(piece)
-		if found_idx != -1: items.remove_at(found_idx)
+		var items2 = cell_occupants[i]
+		var found_idx = items2.find(piece)
+		if found_idx != -1: items2.remove_at(found_idx)
 	var items = cell_occupants[cell_nr]
 	items.push_back(piece)
 	

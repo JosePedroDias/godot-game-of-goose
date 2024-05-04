@@ -104,3 +104,4 @@ text = "log in"
 
 [node name="nc" type="Node" parent="."]
 script = ExtResource("2_1ixf4")
+debug = false

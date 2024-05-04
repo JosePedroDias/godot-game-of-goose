@@ -28,8 +28,6 @@ func _ready():
 	else:
 		o = _load_data()
 		
-	print(o)
-		
 	if o != null:
 		if o.has('email'):    email_le.text    = o['email']
 		if o.has('password'): password_le.text = o['password']

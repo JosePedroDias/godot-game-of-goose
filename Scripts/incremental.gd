@@ -6,7 +6,7 @@ var timer: SceneTreeTimer
 func _ready():
 	timer = get_tree().create_timer(.3)
 	nth = await get_incremental_number() % 2
-	print('nth: %d' % nth)
+	#print('nth: %d' % nth)
 		
 func get_incremental_number():
 	var save_path = "user://incremental.tres"
@@ -27,6 +27,6 @@ func get_incremental_number():
 			return value
 		return 0 
 	
-	var value = await read_value.call()
-	store_value.call(value + 1)
-	return value
+	var value2 = await read_value.call()
+	store_value.call(value2 + 1)
+	return value2

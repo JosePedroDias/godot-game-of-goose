@@ -45,7 +45,7 @@ func go():
 		return
 	#print('session: ', _session)
 	
-	get_window().title = 'game of goose %s' % _session.user_id
+	get_window().title = '#%d: game of goose (%s)' % [Incremental.nth, _session.user_id.substr(0, 6)]
 	
 	_socket = Nakama.create_socket_from(_client)
 	
