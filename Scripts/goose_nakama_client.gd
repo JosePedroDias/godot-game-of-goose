@@ -6,6 +6,8 @@ class_name GooseNakamaClient
 
 var play_scene: PlayScene
 
+var out: OverlayOutput
+
 const OPCODE = {
 	# server to client
 	OPPONENT_LEFT = 102,
@@ -22,6 +24,9 @@ const OPCODE = {
 	ROLL_DICE = 200,
 }
 
+func _ready():
+	out = get_parent().out
+
 func go():	
 	super.go()
 
@@ -29,7 +34,7 @@ func get_user_id() -> String:
 	return _session.user_id
 	
 func on_receive(op: int, data) -> void:
-	print(op, ' | ', data)
+	out.log(str(op) + ' | ' + str(data))
 	
 	if !play_scene:
 		print('no play scene!')
@@ -37,16 +42,16 @@ func on_receive(op: int, data) -> void:
 	
 	match op:
 		OPCODE.NEXT_TO_PLAY:
-			print("NEXT_TO_PLAY: ", data)
+			out.log("NEXT_TO_PLAY: %s" % JSON.stringify(data))
 			play_scene.next_to_play(data)
 		OPCODE.USERS_CHANGED:
-			print("USERS_CHANGED: ", data)
+			out.log("USERS_CHANGED: %s" + JSON.stringify(data))
 			play_scene.users_changed(data)
 		OPCODE.PIECE_MOVED:
-			print("PIECE_MOVED: ", data.user_id, ' , ', data.cell_no)
+			out.log("PIECE_MOVED: %s, %d" % [data.user_id,data.cell_no])
 			play_scene.piece_moved(data.user_id, data.cell_no)
 		OPCODE.DICE_ROLL:
-			print("DICE_ROLL: ", data)
+			out.log("DICE_ROLL: %d" % data)
 			play_scene.apply_dice_roll(data)
 
 func play():

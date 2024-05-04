@@ -21,6 +21,18 @@ const LAST_CELL_NO: int = 63
 func _ready():
 	cp.set_die_face(randi_range(1, 6))
 	nc.play_scene = self
+	
+	await Incremental.timer.timeout
+	var rand = RandomNumberGenerator.new()
+
+	var vp = DisplayServer.screen_get_size()
+	
+	get_window().size = Vector2(0.40*vp.x, 0.40*vp.y)
+	
+	if Incremental.nth == 0:
+		get_window().position = Vector2(0.05*vp.x, 0.30*vp.y)
+	else:
+		get_window().position = Vector2(0.55*vp.x, 0.30*vp.y)
 
 func _input(event) -> void:
 	if event is InputEventKey:
@@ -82,7 +94,7 @@ func piece_moved(user_id: String, piece_no: int) -> void:
 	_queued_piece_move.push_back([user_id, piece_no])
 	
 func _piece_moved(face_no):
-	print('_piece_moved (%d moves to address)' % _queued_piece_move.size())
+	%out.log('_piece_moved (%d moves to address)' % _queued_piece_move.size())
 	if _queued_piece_move.size() > 0:
 		var piece_move = _queued_piece_move.pop_front()
 		var user_id = piece_move[0]

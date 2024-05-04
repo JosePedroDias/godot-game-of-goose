@@ -1,4 +1,4 @@
-[gd_scene load_steps=9 format=3 uid="uid://bdlmoamg5tnl0"]
+[gd_scene load_steps=10 format=3 uid="uid://bdlmoamg5tnl0"]
 
 [ext_resource type="Script" path="res://Scripts/play_scene.gd" id="1_6qy2j"]
 [ext_resource type="ArrayMesh" uid="uid://cqia1sjum30td" path="res://Assets/Meshes/render_die.res" id="1_o5irr"]
@@ -7,6 +7,7 @@
 [ext_resource type="Texture2D" uid="uid://b66357whr25l4" path="res://Assets/Textures/wood_top_hd.jpg" id="4_xp1ri"]
 [ext_resource type="PackedScene" uid="uid://ddh5sliebtvrw" path="res://Scenes/cell_positions.tscn" id="5_xryfj"]
 [ext_resource type="PackedScene" uid="uid://br0qeiur055xs" path="res://Scenes/nakama_login_ui.tscn" id="7_2r5xi"]
+[ext_resource type="PackedScene" uid="uid://boo1kwx2h0huj" path="res://Scenes/overlay-output.tscn" id="8_ttvbi"]
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_2ndrn"]
 albedo_color = Color(0.690196, 0.619608, 0.0901961, 1)
@@ -55,4 +56,8 @@ texture = ExtResource("4_xp1ri")
 [node name="CellPositions" parent="." node_paths=PackedStringArray("die") instance=ExtResource("5_xryfj")]
 die = NodePath("../die")
 
-[node name="Ui" parent="." instance=ExtResource("7_2r5xi")]
+[node name="out" parent="." instance=ExtResource("8_ttvbi")]
+unique_name_in_owner = true
+
+[node name="Ui" parent="." node_paths=PackedStringArray("out") instance=ExtResource("7_2r5xi")]
+out = NodePath("../out")

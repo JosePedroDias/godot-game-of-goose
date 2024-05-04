@@ -7,6 +7,7 @@ class_name NakamaLoginUi
 @onready var username_le: LineEdit = %UsernameLE
 @onready var login_b:     Button   = %LogInB
 
+@export var out: OverlayOutput
 @export var nc: GooseNakamaClient
 
 const SAVE_DATA_PATH = "user://savegame.save"
