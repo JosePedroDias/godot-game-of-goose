@@ -104,4 +104,10 @@ text = "log in"
 
 [node name="nc" type="Node" parent="."]
 script = ExtResource("2_1ixf4")
+host = null
+port = null
+key = null
+secure = null
+timeout = null
 debug = false
+game_rpc = null

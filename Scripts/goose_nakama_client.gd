@@ -36,20 +36,20 @@ func on_receive(op: int, data) -> void:
 		return
 	
 	match op:
+		OPCODE.REJECTED:
+			play_scene.feedback('rejected move!')
 		OPCODE.FEEDBACK:
-			out.log(data)
+			play_scene.feedback(data)
 		OPCODE.NEXT_TO_PLAY:
-			#out.log("NEXT_TO_PLAY: %s" % JSON.stringify(data))
 			play_scene.next_to_play(data)
 		OPCODE.USERS_CHANGED:
-			#out.log("USERS_CHANGED: %s" + JSON.stringify(data))
 			play_scene.users_changed(data)
 		OPCODE.PIECE_MOVED:
-			#out.log("PIECE_MOVED: %s, %d" % [data.user_id,data.cell_no])
 			play_scene.piece_moved(data.user_id, data.cell_no)
 		OPCODE.ROLL_DICE_OUTCOME:
-			#out.log("DICE_ROLL: %d" % data)
-			play_scene.apply_dice_roll(data)
+			play_scene.roll_dice_outcome(data)
+		_:
+			print('unsupported opcode received:', op)
 
 func roll_dice():
 	await _send(OPCODE.ROLL_DICE, {})

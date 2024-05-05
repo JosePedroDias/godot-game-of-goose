@@ -10,8 +10,8 @@ var children_positions: Array[Node3D] = []
 var die_quats: Array[Quaternion] = []
 var cell_occupants: Array[Array] = []
 
-signal position_animation_finished
-signal rolling_animation_finished
+signal _position_animation_finished
+signal _rolling_animation_finished
 
 var move_piece_duration = 0.3 #0.7
 var roll_die_step_duration = 0.5
@@ -84,7 +84,8 @@ func animate_to_position(piece: Node3D, cell_nr: int) -> void:
 	if !multiple_occupants:
 		tween.tween_property(piece, "position", pos, move_piece_duration)
 	tween.tween_property(piece, "quaternion", q, move_piece_duration)
-	tween.chain().tween_callback(func(): position_animation_finished.emit())
+	tween.chain().tween_callback(func(): _position_animation_finished.emit())
+	await _position_animation_finished
 
 func _random_quaternion() -> Quaternion:
 	var x = randf_range(-1.0, 1.0)
@@ -106,4 +107,5 @@ func roll_die(face_no: int) -> void:
 	var tween = get_tree().create_tween().set_trans(Tween.TRANS_SINE)
 	tween.tween_property(die, "quaternion", _random_quaternion(),          roll_die_step_duration)
 	tween.tween_property(die, "quaternion", _get_face_quaternion(face_no), roll_die_step_duration)
-	tween.tween_callback(func(): rolling_animation_finished.emit())
+	tween.tween_callback(func(): _rolling_animation_finished.emit())
+	await _rolling_animation_finished
