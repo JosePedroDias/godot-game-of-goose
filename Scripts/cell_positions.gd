@@ -49,9 +49,19 @@ func get_nth_marker(cell_nr: int) -> Node3D:
 		print('get_nth_marker received wrong index')
 		cell_nr = 0
 	return children_positions[cell_nr]
+
+func animate_to_position(piece: Node3D, desired_cell_no: int, current_cell_no: int) -> void:
+	#print('animate_to_position: #%d -> #%d' % [current_cell_no, desired_cell_no])
+	var delta = 1 if desired_cell_no > current_cell_no else -1
+	#print('delta: ', delta)
+	while current_cell_no != desired_cell_no:
+		current_cell_no += delta
+		#print('current_cell_no: ', current_cell_no)
+		await _animate_to_position(piece, current_cell_no)
+	#print('animate_to_position DONE!\n')
 	
-func animate_to_position(piece: Node3D, cell_nr: int) -> void:
-	# update cell occupants
+func _animate_to_position(piece: Node3D, cell_nr: int) -> void:
+	# update cell occupants, removing this piece from all of them
 	for i in range(play_scene.LAST_CELL_NO + 1):
 		var items2 = cell_occupants[i]
 		var found_idx = items2.find(piece)
@@ -59,11 +69,12 @@ func animate_to_position(piece: Node3D, cell_nr: int) -> void:
 	var items = cell_occupants[cell_nr]
 	items.push_back(piece)
 	
-	# get reference position and orientation from makers stored in children_positions
+	# get reference position and orientation from markers stored in children_positions
 	var node = get_nth_marker(cell_nr)
 	var pos = node.position
 	var q = node.quaternion
 	
+	# scatter cell occupants aka pieces around the marker position at the cell center
 	var multiple_occupants = items.size() > 1
 	if multiple_occupants:
 		var i = 0
@@ -80,6 +91,7 @@ func animate_to_position(piece: Node3D, cell_nr: int) -> void:
 			tween0.tween_property(item, "position", pos2, move_piece_duration)
 			i += 1
 	
+	# animate everything but piece positions (if they've been already handled)
 	var tween = get_tree().create_tween().set_trans(Tween.TRANS_CUBIC).set_parallel(true)
 	if !multiple_occupants:
 		tween.tween_property(piece, "position", pos, move_piece_duration)

@@ -48,16 +48,20 @@ func _create_piece(_user_id: String) -> MeshInstance3D:
 	var mat = StandardMaterial3D.new()
 	mat.albedo_color = Color(randf(), randf(), randf(), 1.0)
 	piece.material_override = mat
-	cp.animate_to_position(piece, 0)
+	cp.animate_to_position(piece, 0, 1)
 	#piece.name = 'piece_%s' % user_id
 	return piece
 
 #################
 
+var _handle_commands_occupied = false
+
 func _handle_commands():
+	if _handle_commands_occupied: return
+	_handle_commands_occupied = true
 	while _commands_queue.size() > 0:
 		var cmd: Array = _commands_queue.pop_front()
-		print(cmd)
+		#print(cmd)
 		var cmd_name = cmd[0]
 		var arg0 = null if cmd.size() < 2 else cmd[1]
 		var arg1 = null if cmd.size() < 3 else cmd[2]
@@ -88,15 +92,19 @@ func _handle_commands():
 				await cp.roll_die(value)
 			CMD_PIECE_MOVED:
 				var user_id  = arg0
-				var piece_no = arg1
-				out._print("piece_moved('%s', %d)" % [user_id, piece_no])
-				var piece = players[user_id].piece
-				await cp.animate_to_position(piece, piece_no)
+				var desired_cell_no = arg1
+				out._print("piece_moved('%s', %d)" % [user_id, desired_cell_no])
+				var player = players[user_id]
+				var piece = player.piece
+				var current_cell_no = player.cell_no
+				await cp.animate_to_position(piece, desired_cell_no, current_cell_no)
+				player.cell_no = desired_cell_no
 			CMD_FEEDBACK:
 				var msg = arg0
 				out.log('feedback: %s' % msg)
 			_:
 				print('unsupported command: ' + cmd_name)
+	_handle_commands_occupied = false
 
 #################
 
