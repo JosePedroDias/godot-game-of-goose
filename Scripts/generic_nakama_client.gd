@@ -90,9 +90,6 @@ func _on_socket_closed():
 	
 	reconnect_retries_left -= 1
 	
-	print('sleeping for 500 ms...')
-	await get_tree().create_timer(.5).timeout
-	
 	print("Resuming socket...")
 	await _socket.connect_async(_session)
 

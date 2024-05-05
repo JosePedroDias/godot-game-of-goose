@@ -7,6 +7,9 @@
 
 ## TODO
 
+- check awaits are being properly used
+- make sure commands are addressed by pulling them from a queue, otherwise animations will be out of sync with server sent data
+
 - TODO: new client -> server opcode to request the server to print out its internal state
 - BUG: GO and ROLL cells are misbehaving
 - UI overlay with colored pieces and player names

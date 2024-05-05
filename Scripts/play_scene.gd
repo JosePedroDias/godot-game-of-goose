@@ -81,9 +81,15 @@ func _add_player(user_id):
 		'cell_destination_no': 0,
 	}
 
-#func users_changed(user_ids):
-#	pass # TODO is this needed?
-#	#print(user_ids)
+func users_changed(user_ids):
+	var new_user_ids = []
+	var missing_user_ids = players.keys()
+	for user_id in user_ids:
+		var idx = missing_user_ids.find(user_id)
+		if idx != -1: missing_user_ids.remove_at(idx)
+		else: new_user_ids.push_back(user_id)
+	print('new:     ', new_user_ids)
+	print('missing: ', missing_user_ids)
 
 func apply_dice_roll(value: int) -> void:
 	out.log('the die landed on %d' % value)
