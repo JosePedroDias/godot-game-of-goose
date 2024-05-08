@@ -13,8 +13,11 @@ var cell_occupants: Array[Array] = []
 signal _position_animation_finished
 signal _rolling_animation_finished
 
-var move_piece_duration = 0.3 #0.7
-var roll_die_step_duration = 0.5
+var move_piece_duration = 0.1
+var roll_die_step_duration = 0.2
+
+#var move_piece_duration = 0.3
+#var roll_die_step_duration = 0.5
 
 const RAD_90 = 0.5 * PI
 const RAD_180 = PI

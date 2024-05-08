@@ -7,6 +7,8 @@ const CMD_USERS_CHANGED     = 2
 const CMD_ROLL_DICE_OUTCOME = 3
 const CMD_PIECE_MOVED       = 4
 const CMD_FEEDBACK          = 5
+const CMD_SLEEP             = 6
+const CMD_GAME_OVER         = 7
 
 @onready var cp: CellPositions = $CellPositions #get_node("CellPositions")
 @onready var reference_piece: MeshInstance3D = $piece # $die
@@ -17,8 +19,8 @@ var players: Dictionary = {}
 # piece (MeshInstance3D)
 # cell_no (int)
 # cell_destination_no (int)
-# color (Color)
-# name (String)
+# username (String)
+# color (Color) ***
 
 var current_player_user_id: String = ""
 
@@ -56,6 +58,18 @@ func _create_piece(_user_id: String) -> MeshInstance3D:
 
 var _handle_commands_occupied = false
 
+func _pl(n: int) -> String:
+	return '' if n == 1 else 's'
+
+func _usernames_from_user_ids(user_ids):
+	var result = []
+	for user_id in user_ids:
+		result.push_back( players[user_id].username )
+	return result
+
+func _a(label, user_ids):
+	if user_ids.size() > 0: out.log(label % [_pl(user_ids.size()), ', '.join(_usernames_from_user_ids(user_ids))])
+
 func _handle_commands():
 	if _handle_commands_occupied: return
 	_handle_commands_occupied = true
@@ -68,24 +82,29 @@ func _handle_commands():
 		
 		match cmd_name:
 			CMD_USERS_CHANGED:
-				var user_ids = arg0
-				out.log('users changed: %s' % JSON.stringify(user_ids))
+				var users_details = arg0
 				var new_user_ids = []
 				var missing_user_ids = players.keys()
-				for user_id in user_ids:
+				
+				var tmp_i = missing_user_ids.find(nc.get_user_id())
+				if tmp_i != -1: missing_user_ids.remove_at(tmp_i)
+				
+				for user_id in users_details:
+					var user_details = users_details[user_id]
 					var idx = missing_user_ids.find(user_id)
-					if idx != -1: missing_user_ids.remove_at(idx)
-					else: new_user_ids.push_back(user_id)
-				#print('new:     ', new_user_ids)
-				#print('missing: ', missing_user_ids)
+					if idx != -1:
+						missing_user_ids.remove_at(idx)
+					else:
+						if !players.has(user_id): _add_player(user_id, user_details.username)
+						if user_id != nc.get_user_id(): new_user_ids.push_back(user_id)
+				_a('new player%s: %s', new_user_ids)
+				_a('player%s left: %s', missing_user_ids)
 			CMD_NEXT_TO_PLAY:
 				var user_ids = arg0
-				out.log('next to play: %s' % JSON.stringify(user_ids))
-				for user_id in user_ids:
-					if !players.has(user_id): _add_player(user_id)
 				current_player_user_id = user_ids[0]
+				var current_player_username = players[current_player_user_id].username
 				if current_player_user_id == nc.get_user_id(): out.log("our time to play")
-				else: out.log("it's %s time to play" % current_player_user_id)
+				else: out.log("it's %s time to play" % current_player_username)
 			CMD_ROLL_DICE_OUTCOME:
 				var value = arg0
 				out.log('the die landed on %d' % value)
@@ -102,6 +121,15 @@ func _handle_commands():
 			CMD_FEEDBACK:
 				var msg = arg0
 				out.log('feedback: %s' % msg)
+			CMD_SLEEP:
+				var ms = arg0
+				var secs = 0.001 * ms
+				out.log('sleeping for: %.1f secs' % secs)
+				await get_tree().create_timer(secs).timeout
+			CMD_GAME_OVER:
+				var user_id = arg0
+				var winner_username = players[user_id].username
+				out.log('%s won the game!' % winner_username)
 			_:
 				print('unsupported command: ' + cmd_name)
 	_handle_commands_occupied = false
@@ -109,7 +137,16 @@ func _handle_commands():
 #################
 
 # INCOMING OPCODE
-func feedback(msg):
+func sleep(ms: int) -> void:
+	_commands_queue.push_back([CMD_SLEEP, ms])
+	_handle_commands()
+
+# INCOMING OPCODE
+func game_over(user_id: String) -> void:
+	_commands_queue.push_back([CMD_GAME_OVER, user_id])
+	_handle_commands()
+
+func feedback(msg: String) -> void:
 	_commands_queue.push_back([CMD_FEEDBACK, msg])
 	_handle_commands()
 
@@ -119,8 +156,8 @@ func next_to_play(user_ids):
 	_handle_commands()
 
 # INCOMING OPCODE
-func users_changed(user_ids):
-	_commands_queue.push_back([CMD_USERS_CHANGED, user_ids])
+func users_changed(users_details):
+	_commands_queue.push_back([CMD_USERS_CHANGED, users_details])
 	_handle_commands()
 
 # INCOMING OPCODE
@@ -135,11 +172,12 @@ func piece_moved(user_id: String, piece_no: int) -> void:
 
 #################
 
-func _add_player(user_id):
+func _add_player(user_id: String, username: String):
 	players[user_id] = {
-		'piece': _create_piece(user_id),
-		'cell_no': 0,
-		'cell_destination_no': 0,
+		piece = _create_piece(user_id),
+		cell_no = 0,
+		cell_destination_no = 0,
+		username = username,
 	}
 
 func _place_window():

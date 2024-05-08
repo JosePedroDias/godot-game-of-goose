@@ -8,6 +8,8 @@ var out: OverlayOutput
 
 const OPCODE = {
 	# server to client
+	GAME_OVER = 100,
+	SLEEP = 101,
 	REJECTED = 103,
 	FEEDBACK = 105,
 	NEXT_TO_PLAY = 106,
@@ -36,6 +38,10 @@ func on_receive(op: int, data) -> void:
 		return
 	
 	match op:
+		OPCODE.SLEEP:
+			play_scene.sleep(data)
+		OPCODE.GAME_OVER:
+			play_scene.game_over(data)
 		OPCODE.REJECTED:
 			play_scene.feedback('rejected move!')
 		OPCODE.FEEDBACK:
