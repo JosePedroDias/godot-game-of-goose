@@ -45,7 +45,6 @@ func onReceive(op: int, data) -> void:
 			play_scene.sleep(data)
 		OPCODE.YOUR_SESSION_ID:
 			sessionId = data
-			print("sessionId is <%s>" % [data])
 		OPCODE.GAME_OVER:
 			play_scene.game_over(data)
 		OPCODE.REJECTED:

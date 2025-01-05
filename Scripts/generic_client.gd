@@ -9,25 +9,25 @@ class_name GenericServerClient
 @export var debug: bool = true
 
 # auth params
-var email: String # TODO UNUSED
-var password: String
+# TODO UNUSED
 var username: String
+var password: String
+var email: String
 
 var socket: WebSocketPeer = WebSocketPeer.new()
+var connected: bool = false
 
 func _ready():
 	set_process(false)
+	
+func isConnected() -> bool:
+	return connected
 
 func connectToServer():
 	var url = 'ws://%s:%s%s' % [host, port, path]
-	print(url)
-	
 	var err = socket.connect_to_url(url)
-	
-	if err != OK:
-		print("Unable to connect")
-	else:
-		set_process(true)
+	if err != OK: print("Unable to connect")
+	else: set_process(true)
 
 func onReceive(_op: int, _state: Variant) -> void:
 	pass # you should override this method in the derived class
@@ -36,6 +36,7 @@ func _process(_delta):
 	socket.poll()
 	var state = socket.get_ready_state()
 	if state == WebSocketPeer.STATE_OPEN:
+		connected = true
 		while socket.get_available_packet_count():
 			var data = socket.get_packet().get_string_from_utf8()
 			# print("Got data from server: %s" % [data])
@@ -48,17 +49,16 @@ func _process(_delta):
 		pass
 	elif state == WebSocketPeer.STATE_CLOSED:
 		var code = socket.get_close_code()
-		print("WebSocket closed with code: %d. Clean: %s" % [code, code != -1])
+		#print("WebSocket closed with code: %d. Clean: %s" % [code, code != -1])
 		set_process(false)
+		connected = false
 	
 func _onReceive(o: Variant):
 	var state = null
-	
 	if o.payload && o.payload != null:
 		var json = JSON.new()
 		var err = json.parse(o.payload)
 		if err == OK: state = json.data
-	
 	onReceive(o.op, state)
 
 func _send(op, state):
