@@ -63,4 +63,4 @@ func onReceive(op: int, data) -> void:
 			print('unsupported opcode received:', op)
 
 func roll_dice():
-	_send(OPCODE.ROLL_DICE, {})
+	_send(OPCODE.ROLL_DICE, null)
