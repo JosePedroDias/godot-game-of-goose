@@ -1,7 +1,7 @@
 [gd_scene load_steps=3 format=3 uid="uid://br0qeiur055xs"]
 
-[ext_resource type="Script" path="res://Scripts/nakama_login_ui.gd" id="1_n5bxm"]
-[ext_resource type="Script" path="res://Scripts/goose_nakama_client.gd" id="2_1ixf4"]
+[ext_resource type="Script" path="res://Scripts/server_login_ui.gd" id="1_n5bxm"]
+[ext_resource type="Script" path="res://Scripts/goose_client.gd" id="2_1ixf4"]
 
 [node name="Ui" type="Control" node_paths=PackedStringArray("nc")]
 layout_mode = 3

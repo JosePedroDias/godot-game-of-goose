@@ -12,7 +12,7 @@ const CMD_GAME_OVER         = 7
 
 @onready var cp: CellPositions = $CellPositions #get_node("CellPositions")
 @onready var reference_piece: MeshInstance3D = $piece # $die
-@onready var nc: GooseNakamaClient = $Ui.nc
+@onready var nc: GooseClient = $Ui.nc
 @onready var out: OverlayOutput = %out
 
 var players: Dictionary = {}
@@ -86,7 +86,7 @@ func _handle_commands():
 				var new_user_ids = []
 				var missing_user_ids = players.keys()
 				
-				var tmp_i = missing_user_ids.find(nc.get_user_id())
+				var tmp_i = missing_user_ids.find(nc.getSessionId())
 				if tmp_i != -1: missing_user_ids.remove_at(tmp_i)
 				
 				for user_id in users_details:
@@ -96,14 +96,14 @@ func _handle_commands():
 						missing_user_ids.remove_at(idx)
 					else:
 						if !players.has(user_id): _add_player(user_id, user_details.username)
-						if user_id != nc.get_user_id(): new_user_ids.push_back(user_id)
+						if user_id != nc.getSessionId(): new_user_ids.push_back(user_id)
 				_a('new player%s: %s', new_user_ids)
 				_a('player%s left: %s', missing_user_ids)
 			CMD_NEXT_TO_PLAY:
 				var user_ids = arg0
 				current_player_user_id = user_ids[0]
 				var current_player_username = players[current_player_user_id].username
-				if current_player_user_id == nc.get_user_id(): out.log("our time to play")
+				if current_player_user_id == nc.getSessionId(): out.log("our time to play")
 				else: out.log("it's %s time to play" % current_player_username)
 			CMD_ROLL_DICE_OUTCOME:
 				var value = arg0
@@ -127,9 +127,12 @@ func _handle_commands():
 				out.log('sleeping for: %.1f secs' % secs)
 				await get_tree().create_timer(secs).timeout
 			CMD_GAME_OVER:
-				var user_id = arg0
-				var winner_username = players[user_id].username
-				out.log('%s won the game!' % winner_username)
+				var sessionId = arg0
+				if len(sessionId) > 0:
+					var winner_username = players[sessionId].username
+					out.log('%s won the game!' % winner_username)
+				else:
+					out.log('game over :|')
 			_:
 				print('unsupported command: ' + cmd_name)
 	_handle_commands_occupied = false

@@ -12,18 +12,21 @@ config_version=5
 
 config/name="game_of_goose"
 run/main_scene="res://Scenes/play_scene.tscn"
-config/features=PackedStringArray("4.2", "Forward Plus")
+config/features=PackedStringArray("4.3", "Forward Plus")
 config/icon="res://icon.svg"
 
 [autoload]
 
-Nakama="*res://addons/com.heroiclabs.nakama/Nakama.gd"
 Incremental="*res://Scripts/incremental.gd"
 
 [display]
 
 window/size/viewport_width=1200
 window/size/viewport_height=900
+
+[editor]
+
+run/main_run_args="asd"
 
 [filesystem]
 

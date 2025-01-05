@@ -1,6 +1,6 @@
 extends Control
 
-class_name NakamaLoginUi
+class_name ServerLoginUi
 
 @onready var email_le:    LineEdit = %EmailLE
 @onready var password_le: LineEdit = %PasswordLE
@@ -8,7 +8,7 @@ class_name NakamaLoginUi
 @onready var login_b:     Button   = %LogInB
 
 @export var out: OverlayOutput
-@export var nc: GooseNakamaClient
+@export var nc: GooseClient
 
 const SAVE_DATA_PATH = "user://savegame.save"
 
@@ -62,4 +62,4 @@ func _on_log_in_pressed():
 	nc.email = o.email
 	nc.password = o.password
 	nc.username = o.username
-	nc.go()
+	nc.connectToServer()
