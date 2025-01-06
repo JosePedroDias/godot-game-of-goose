@@ -1,7 +1,8 @@
 # Godot Game of Goose
 
-Multiplayer game of goose in Godot 4.x 3D.
-Needs a [Nakama server counterpart](https://github.com/JosePedroDias/nakama-game-of-goose) to work 
+Multiplayer game of goose in Godot 4.3 3D.
+Uses a relatively basic JSON-messages websocket server
+~Needs a [Nakama server counterpart](https://github.com/JosePedroDias/nakama-game-of-goose) to work~
 
 
 ## TODO
